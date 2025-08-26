@@ -16,7 +16,7 @@ RUN npm install
 RUN npm run build --prod
 
 # Nginx para servir
-FROM nginx:stable AS final
+FROM nginx:alpine AS final
 
 # Apaga site default do nginx
 RUN rm -rf /usr/share/nginx/html/*
