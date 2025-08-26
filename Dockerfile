@@ -23,5 +23,7 @@ RUN rm -rf /usr/share/nginx/html/*
 
 # Copia build do Angular
 COPY --from=build /app/dist/finta/browser /usr/share/nginx/html
+# Step 3: Copy custom Nginx configuration
+COPY ./nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
