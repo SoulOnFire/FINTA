@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  finta:
+    build: .
+    container_name: finta
+    ports:
+      - "4200:80"
+    restart: always
+    networks:
+      - finta_network
+
+networks:
+  finta_network:
+    driver: bridge

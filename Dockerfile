@@ -1,22 +1,28 @@
-# Etapa de build
+# Usamos Node para fazer clone e build
 FROM node:20-alpine AS build
 
 WORKDIR /app
 
-COPY package*.json ./
+# Instalar git
+RUN apk add --no-cache git
+
+# Clonar o repositório
+RUN git clone https://github.com/SoulOnFire/FINTA.git .
+
+# Instalar dependências
 RUN npm install
 
-COPY . .
+# Build do Angular
 RUN npm run build --prod
 
-# Etapa de produção
+# Nginx para servir
 FROM nginx:alpine
 
-COPY --from=build /app/dist/FINTA /usr/share/nginx/html
+# Apaga site default do nginx
+RUN rm -rf /usr/share/nginx/html/*
 
-# Copiar configuração customizada (opcional)
-# COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copia build do Angular
+COPY --from=build /app/dist/ /usr/share/nginx/html
 
 EXPOSE 80
-
 CMD ["nginx", "-g", "daemon off;"]
