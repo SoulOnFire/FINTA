@@ -1,11 +1,15 @@
-FROM node:alpine
+FROM node:18-alpine AS build
 
-WORKDIR /usr/src/app
-
-COPY . /usr/src/app
-
-RUN npm install -g @angular/cli
-
+WORKDIR /app
+RUN apk add --no-cache git
+COPY package*.json ./
 RUN npm install
+COPY . .
+RUN npm run build --prod
 
-CMD ["ng", "serve", "--host", "0.0.0.0"]
+FROM nginx:alpine
+RUN rm -rf /usr/share/nginx/html/*
+COPY --from=build /app/dist/FINTA/ /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
