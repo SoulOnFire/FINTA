@@ -13,6 +13,4 @@ RUN git clone https://github.com/SoulOnFire/FINTA.git .
 RUN npm install
 
 # Build do Angular
-RUN npm run start --host=0.0.0.0
-
-EXPOSE 4200
+CMD ["npm", "run", "start", "--host=0.0.0.0"]
