@@ -8,5 +8,6 @@ import { RouterOutlet } from '@angular/router';
   styleUrl: './app.scss'
 })
 export class App {
-  protected readonly title = signal('money-tracker');
+  protected readonly title = signal('FINTA');
+  protected readonly description = signal('Financial Intelligence for Tracking & Analysis');
 }

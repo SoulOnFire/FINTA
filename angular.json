@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "money-tracker": {
+    "finta": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -58,10 +58,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "money-tracker:build:production"
+              "buildTarget": "finta:build:production"
             },
             "development": {
-              "buildTarget": "money-tracker:build:development"
+              "buildTarget": "finta:build:development"
             }
           },
           "defaultConfiguration": "development"
