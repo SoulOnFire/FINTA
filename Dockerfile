@@ -16,13 +16,12 @@ RUN npm install
 RUN npm run build --prod
 
 # Nginx para servir
-FROM nginx:alpine
+FROM nginx:stable AS final
 
 # Apaga site default do nginx
 RUN rm -rf /usr/share/nginx/html/*
 
 # Copia build do Angular
-COPY --from=build /app/dist/finta /usr/share/nginx/html
+COPY --from=build /app/dist/finta/browser /usr/share/nginx/html
 
 EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
