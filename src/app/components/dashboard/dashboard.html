@@ -19,14 +19,14 @@
                     class="w-full p-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
             </div>
             <div>
-                <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Categoria</label>
-                <select [(ngModel)]="filtroCategoria"
-                    class="w-full p-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    <option value="">Todas as categorias</option>
+                <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Categorias</label>
+                <select multiple [(ngModel)]="filtroCategoria"
+                    class="w-full p-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 h-32">
                     @for (cat of categoriasDisponiveis; track cat) {
-                    <option [value]="cat">{{ cat }}</option>
+                    <option [ngValue]="cat">{{ cat }}</option>
                     }
                 </select>
+                <div class="text-xs text-gray-500 mt-1">Segure Ctrl (Windows) ou Cmd (Mac) para selecionar várias</div>
             </div>
             <div class="flex items-end">
                 <button (click)="limparFiltros()"
@@ -46,7 +46,20 @@
         </div>
     </div>
 
-    <!-- Resumo por Categoria -->
+            <!-- Toggles de visualização -->
+            <div class="flex flex-wrap gap-2 mt-4 mb-2">
+                <button (click)="mostrarGrafico.set(!mostrarGrafico())" [class.bg-blue-600]="mostrarGrafico()" class="px-3 py-1 rounded text-white bg-blue-400 hover:bg-blue-600 transition-colors">Gráfico</button>
+                <button (click)="mostrarResumo.set(!mostrarResumo())" [class.bg-green-600]="mostrarResumo()" class="px-3 py-1 rounded text-white bg-green-400 hover:bg-green-600 transition-colors">Resumo</button>
+                <button (click)="mostrarMovimentos.set(!mostrarMovimentos())" [class.bg-gray-600]="mostrarMovimentos()" class="px-3 py-1 rounded text-white bg-gray-400 hover:bg-gray-600 transition-colors">Movimentos</button>
+            </div>
+
+            <!-- Gráfico -->
+            @if (mostrarGrafico()) {
+                <div class="mt-6 sm:mt-8">
+                    <app-charts [totaisPorCategoria]="totaisPorCategoria"></app-charts>
+                </div>
+            }
+    @if(mostrarResumo()){
     <div class="mt-6 sm:mt-8">
         <h3 class="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-gray-800">📊 Resumo por Categoria</h3>
         
@@ -55,16 +68,16 @@
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gradient-to-r from-blue-600 to-blue-700">
                     <tr>
-                        <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">
+                        <th class="px-6 py-2 text-left text-xs font-bold text-white uppercase tracking-wider">
                             Categoria
                         </th>
-                        <th class="px-6 py-4 text-right text-xs font-bold text-white uppercase tracking-wider">
+                        <th class="px-6 py-2 text-right text-xs font-bold text-white uppercase tracking-wider">
                             💸 Débitos
                         </th>
-                        <th class="px-6 py-4 text-right text-xs font-bold text-white uppercase tracking-wider">
+                        <th class="px-6 py-2 text-right text-xs font-bold text-white uppercase tracking-wider">
                             💰 Créditos
                         </th>
-                        <th class="px-6 py-4 text-right text-xs font-bold text-white uppercase tracking-wider">
+                        <th class="px-6 py-2 text-right text-xs font-bold text-white uppercase tracking-wider">
                             📈 Saldo
                         </th>
                     </tr>
@@ -73,16 +86,16 @@
                     @for (total of totaisPorCategoria; track total.categoria; let i = $index) {
                     <tr class="hover:bg-gray-50 transition-colors duration-150"
                         [class]="i % 2 === 0 ? 'bg-white' : 'bg-gray-50'">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        <td class="px-6 py-2 whitespace-nowrap text-sm font-medium text-gray-900">
                             {{ total.categoria }}
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-semibold text-red-600">
+                        <td class="px-6 py-2 whitespace-nowrap text-sm text-right font-semibold text-red-600">
                             {{ total.debitos | currency:'EUR':'symbol':'1.2-2' }}
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-semibold text-green-600">
+                        <td class="px-6 py-2 whitespace-nowrap text-sm text-right font-semibold text-green-600">
                             {{ total.creditos | currency:'EUR':'symbol':'1.2-2' }}
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-bold"
+                        <td class="px-6 py-2 whitespace-nowrap text-sm text-right font-bold"
                             [class]="total.total < 0 ? 'text-red-700 bg-red-100' : total.total > 0 ? 'text-green-700 bg-green-100' : 'text-gray-600'">
                             {{ total.total | currency:'EUR':'symbol':'1.2-2' }}
                         </td>
@@ -118,7 +131,8 @@
             }
         </div>
     </div>
-
+    }
+    @if(mostrarMovimentos()){
     <!-- Detalhes dos Movimentos -->
     <div class="mt-6 sm:mt-8">
         <h3 class="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-gray-800">📋 Detalhes dos Movimentos</h3>
@@ -129,22 +143,22 @@
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gradient-to-r from-gray-700 to-gray-800">
                         <tr>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">
+                            <th class="px-6 py-2 text-left text-xs font-bold text-white uppercase tracking-wider">
                                 Data
                             </th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">
+                            <th class="px-6 py-2 text-left text-xs font-bold text-white uppercase tracking-wider">
                                 Descrição
                             </th>
-                            <th class="px-6 py-4 text-right text-xs font-bold text-white uppercase tracking-wider">
+                            <th class="px-6 py-2 text-right text-xs font-bold text-white uppercase tracking-wider">
                                 Valor
                             </th>
-                            <th class="px-6 py-4 text-center text-xs font-bold text-white uppercase tracking-wider">
+                            <th class="px-6 py-2 text-center text-xs font-bold text-white uppercase tracking-wider">
                                 Tipo
                             </th>
-                            <th class="px-6 py-4 text-right text-xs font-bold text-white uppercase tracking-wider">
+                            <th class="px-6 py-2 text-right text-xs font-bold text-white uppercase tracking-wider">
                                 Saldo
                             </th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">
+                            <th class="px-6 py-2 text-left text-xs font-bold text-white uppercase tracking-wider">
                                 Categoria
                             </th>
                         </tr>
@@ -153,26 +167,26 @@
                         @for (m of movimentosFiltrados; track $index; let i = $index) {
                         <tr class="hover:bg-blue-50 transition-colors duration-150"
                             [class]="i % 2 === 0 ? 'bg-white' : 'bg-gray-50'">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
+                            <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-900 font-medium">
                                 {{ m.data }}
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-900 max-w-xs truncate" [title]="m.descricao">
+                            <td class="px-6 py-2 text-sm text-gray-900 max-w-xs truncate" [title]="m.descricao">
                                 {{ m.descricao }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-bold"
+                            <td class="px-6 py-2 whitespace-nowrap text-sm text-right font-bold"
                                 [class]="m.tipo === 'debito' ? 'text-red-600' : 'text-green-600'">
                                 {{ m.valor | currency:'EUR':'symbol':'1.2-2' }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                            <td class="px-6 py-2 whitespace-nowrap text-center">
                                 <span class="inline-flex px-3 py-1 rounded-full text-xs font-medium"
                                       [class]="m.tipo === 'debito' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'">
                                     {{ m.tipo === 'debito' ? 'Débito' : 'Crédito' }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-semibold text-gray-700">
+                            <td class="px-6 py-2 whitespace-nowrap text-sm text-right font-semibold text-gray-700">
                                 {{ m.saldo | currency:'EUR':'symbol':'1.2-2' }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-900">
                                 <span class="inline-flex px-2 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800">
                                     {{ m.categoria }}
                                 </span>
@@ -193,8 +207,8 @@
                 <!-- Header do Card -->
                 <div class="flex justify-between items-start mb-3">
                     <div class="flex-1">
-                        <div class="text-xs text-gray-500 mb-1">{{ m.data }}</div>
-                        <div class="text-sm font-medium text-gray-900 line-clamp-2" [title]="m.descricao">
+                        <div class="text-xs text-gray-500 mb-3">{{ m.data }}</div>
+                        <div class="text-xs font-medium text-gray-900 line-clamp-2" [title]="m.descricao">
                             {{ m.descricao }}
                         </div>
                     </div>
@@ -224,5 +238,7 @@
             </div>
             }
         </div>
-    </div> }
+    </div> 
+    }
+}
 </div>

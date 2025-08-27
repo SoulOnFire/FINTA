@@ -2,6 +2,7 @@ import { CurrencyPipe } from '@angular/common';
 import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Papa } from 'ngx-papaparse';
+import { ChartsComponent } from '../charts/charts';
 
 interface Movimento {
   data: string;
@@ -21,7 +22,7 @@ interface Entidade {
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CurrencyPipe, FormsModule],
+  imports: [CurrencyPipe, FormsModule, ChartsComponent],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })
@@ -29,10 +30,15 @@ export class Dashboard {
   constructor(private papa: Papa) { }
   movimentos = signal<Movimento[]>([]);
 
+  // Toggles de visualização
+  mostrarGrafico = signal(true);
+  mostrarResumo = signal(true);
+  mostrarMovimentos = signal(true);
+
   // Filtros
   filtroDataInicio = signal<string>('');
   filtroDataFim = signal<string>('');
-  filtroCategoria = signal<string>('');
+  filtroCategoria = signal<string[]>([]);
 
   get categoriasDisponiveis() {
     const cats = new Set<string>();
@@ -62,10 +68,10 @@ export class Dashboard {
       });
     }
 
-    // Filtro por categoria
-    if (this.filtroCategoria()) {
+    // Filtro por categorias (múltiplas)
+    if (this.filtroCategoria().length > 0) {
       movimentosFiltrados = movimentosFiltrados.filter(m =>
-        m.categoria === this.filtroCategoria()
+        this.filtroCategoria().includes(m.categoria || '🅾️ Outros')
       );
     }
 
@@ -108,11 +114,12 @@ export class Dashboard {
   limparFiltros() {
     this.filtroDataInicio.set('');
     this.filtroDataFim.set('');
-    this.filtroCategoria.set('');
+    this.filtroCategoria.set([]);
   }
   categoriasRegex: { [key: string]: RegExp } = {
-    '💵 Levantamentos': /(CH-\d+|LEV\s)/i,
+    '🏧Levantamentos': /(CH-\d+|LEV\s)/i,
     '🤑 Salário':/UNIDADE LOCAL DE S/i,
+    '💵 Cartão Crédito CETELEM': /CETELEM/i,
     '🛒 Supermercados / Mantimentos': /(JASMINE UNIVERSE|WELLS|MEU SUPER|AUCHAN|SURPRESAS REPETIDA|MINIPRECO|SUPERARRIFANA|MEGAFAROL SUPERM|LIDL|CONTINENTE|PINGO DOCE|INTERMARCHE|SUPERMERCADO|FROIZ|SPAR|SUPERFAJOES|WELL'S|TALHOS PAULA SOARES|PODERDAFRUTA)/i,
     '🍔 Restauração / Cafés': /ROTUNDA LUMINOSA|PEDRO ALEXANDREGONCA|TOCA DA PICANHA|CASA DE MANAS|SUNREST 40|GELATARIA DELIZIA|HILDA BARROS|MINA ESTACAO|ANTASMAC|BOUTIQUE DO GELADO|SABORES A VISTA|UNICAMPOS LDA|TORRE DEL ORO|MESA REDONDA|AGREBELO|YONG YE|ESTACION SERVICIO CA|LA CABRIALEGA|CASA MANOLO|BAR CASA CUEVA|PRAZERES DA TERRA|GARE PARADELA|ANTONIO JULIO|MCDONALD|ALEX REST|AGUDO E AVELUDADO|RAINHA 5|O FORNO LEITAO DO ZE|(Grelha 2020|UNICAMPUS LDA|MCDONALDS|KFC|PANS & COMPANY|CAFE|PASTELARIA|PADARIA|PIZZARIA|PIZZA|RESTAURANTE|ADEGA|TOMATINO|MAGIA CROCANTE|A Tal da Pizza|MR DOG|HAMBURGES|GRILL|CROISSANT|CAFÉ|ACADEMICO|TUDO AOS MOLHOS)/i,
     '⛽ Combustível / Portagens': /(Puxeiros|Santiago|Pontevedr|GASOLEO NORTE SUR|A\.S\. VOUZELA|CP 109 BUSTELO|POSTO RAINHA FEIRA|RODAREAS VISEU NORTE|PRIO ENERGY|PONTE VASCO GAMA|TORRES & VAZ, LDA|A S AVEIRAS|A MORGADO LDA|A\.S\. S\. J MADEIRA II|JUSTSTRONG|REPSOL|BP|GALP|GEPOIL|PETROZONA|CEPSA|POSTO|COMBUSTIVEIS|A\d{1,2}|A\d{2,3}|PORTAL ASCENDI|ASCENDI|VIATOLL|ESTACIONAMENTO)/i,
@@ -120,7 +127,7 @@ export class Dashboard {
     '📱 Telecomunicações': /(VODAFONE|MEO|NOS|SKYSHOWTIME)/i,
     '🎓 Cantina da Escola': /PAYSHOP PORTUGAL SA/i,
     '💡 Serviços essenciais': /(EDP|INDAQUA|ÁGUA|LUZ|GÁS|INSP|MICROSOFT|NET)/i,
-    '💳 Seguros / Empréstimos': /(SEGUROS?|CETELEM|EMPRESTIMO|LOGO)/i,
+    '💳 Seguros / Empréstimos': /(SEGUROS?|EMPRESTIMO|LOGO)/i,
     '📦 Online / E-commerce': /(PROZIS|MARINA ONLINE|GRUPO PORTO EDITORA|BOOKING|GOOGLE|FOTOP|PAYPAL|AMZN|AMAZON|EBAY|REVOLUT|MAKSU|HELP\.MAX|hbomax.com|HIPAY|IFTHENPAY|EASYPAY|VIDAPLAYER|UBER|UBER EATS|UBER ONE|SNIPES|HPY)/i,
     'Ⓜ️ MBWAY': /MBWAY|Trf Imediata|TRF P2P/i,
     '💰 Transferências / Crédito': /(DEPOSITO NUMERARIO|TRF|TRANSF|TRANSFERENCIA|P2P|REGULARIZ TRF|ANUL\. TRANSF|SEPA\+)/i,
@@ -254,7 +261,7 @@ export class Dashboard {
       skipEmptyLines: true,
       complete: (result) => {
         this.movimentos.set((result.data as any[]).map(row => {
-          const descricao = row['Descrição']?.toLowerCase() || '';
+          const descricao = row['Descrição']?.toUpperCase() || '';
           const valor = parseFloat(row['Montante'].replace(',','.'));
           const tipo = valor >= 0 ? 'credito' : 'debito';
           const saldo = parseFloat(row['Saldo'].replace(',','.'));
@@ -276,7 +283,7 @@ export class Dashboard {
 
           return {
             data: row['Data Movimento'],
-            descricao: row['Descrição'],
+            descricao,
             valor,
             tipo,
             saldo,
