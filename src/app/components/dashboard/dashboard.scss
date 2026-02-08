@@ -2,6 +2,37 @@
   text-align: right;
 }
 
+@media (min-width: 768px) {
+  .category-select {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    padding: 10px;
+  }
+
+  .category-select:focus {
+    outline: none;
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.25);
+    background: #fff;
+  }
+
+  .category-select option {
+    padding: 6px 8px;
+    border-radius: 6px;
+  }
+
+  .category-select option:checked {
+    background: #e2e8f0;
+    color: #0f172a;
+  }
+
+  .category-select option:checked:hover {
+    background: #cbd5f5;
+  }
+}
+
 @media print {
   .print-hide {
     display: none !important;

@@ -30,7 +30,7 @@
             <div>
                 <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Categorias</label>
                 <select multiple [(ngModel)]="filtroCategoria"
-                    class="w-full p-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 h-32">
+                    class="w-full p-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 h-32 category-select">
                     @for (cat of categoriasDisponiveis; track cat) {
                     <option [ngValue]="cat">{{ cat }}</option>
                     }
