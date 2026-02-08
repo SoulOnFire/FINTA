@@ -145,6 +145,26 @@
     <!-- Detalhes dos Movimentos -->
     <div class="mt-6 sm:mt-8">
         <h3 class="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-gray-800">📋 Detalhes dos Movimentos</h3>
+
+        <div class="mb-3 print-hide">
+            <div class="flex flex-wrap gap-2">
+                <button (click)="filtroTipoMovimento.set('todos')"
+                    [class.bg-gray-600]="filtroTipoMovimento() === 'todos'"
+                    class="px-3 py-1 rounded text-white bg-gray-400 hover:bg-gray-600 transition-colors">
+                    Todos
+                </button>
+                <button (click)="filtroTipoMovimento.set('credito')"
+                    [class.bg-green-600]="filtroTipoMovimento() === 'credito'"
+                    class="px-3 py-1 rounded text-white bg-green-400 hover:bg-green-600 transition-colors">
+                    Créditos
+                </button>
+                <button (click)="filtroTipoMovimento.set('debito')"
+                    [class.bg-red-600]="filtroTipoMovimento() === 'debito'"
+                    class="px-3 py-1 rounded text-white bg-red-400 hover:bg-red-600 transition-colors">
+                    Débitos
+                </button>
+            </div>
+        </div>
         
         <!-- Layout Desktop - Tabela -->
         <div class="hidden lg:block bg-white rounded-lg shadow-lg overflow-hidden print-table">

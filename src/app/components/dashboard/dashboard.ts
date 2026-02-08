@@ -83,6 +83,7 @@ export class Dashboard {
   filtroDataInicio = signal<string>('');
   filtroDataFim = signal<string>('');
   filtroCategoria = signal<string[]>([]);
+  filtroTipoMovimento = signal<'todos' | 'credito' | 'debito'>('todos');
 
   get categoriasDisponiveis() {
     const cats = new Set<string>();
@@ -116,6 +117,13 @@ export class Dashboard {
     if (this.filtroCategoria().length > 0) {
       movimentosFiltrados = movimentosFiltrados.filter(m =>
         this.filtroCategoria().includes(m.categoria || '🅾️ Outros')
+      );
+    }
+
+    // Filtro por tipo (detalhes)
+    if (this.filtroTipoMovimento() !== 'todos') {
+      movimentosFiltrados = movimentosFiltrados.filter(
+        m => m.tipo === this.filtroTipoMovimento()
       );
     }
 
@@ -159,6 +167,7 @@ export class Dashboard {
     this.filtroDataInicio.set('');
     this.filtroDataFim.set('');
     this.filtroCategoria.set([]);
+    this.filtroTipoMovimento.set('todos');
   }
 
   limparMovimentos() {
