@@ -5,6 +5,7 @@ import { Papa } from 'ngx-papaparse';
 import { ChartsComponent } from '../charts/charts';
 
 interface Movimento {
+  index: number;
   data: string;
   descricao: string;
   valor: number;
@@ -84,6 +85,7 @@ export class Dashboard {
   filtroDataFim = signal<string>('');
   filtroCategoria = signal<string[]>([]);
   filtroTipoMovimento = signal<'todos' | 'credito' | 'debito'>('todos');
+  ordemData = signal<'asc' | 'desc'>('desc');
 
   get categoriasDisponiveis() {
     const cats = new Set<string>();
@@ -127,7 +129,19 @@ export class Dashboard {
       );
     }
 
-    return movimentosFiltrados;
+    const ordem = this.ordemData();
+    return [...movimentosFiltrados].sort((a, b) => {
+      const aTime = this.parseDate(a.data).getTime();
+      const bTime = this.parseDate(b.data).getTime();
+      if (aTime !== bTime) {
+        return ordem === 'asc' ? aTime - bTime : bTime - aTime;
+      }
+      return ordem === 'asc' ? a.index - b.index : b.index - a.index;
+    });
+  }
+
+  alternarOrdemData() {
+    this.ordemData.set(this.ordemData() === 'asc' ? 'desc' : 'asc');
   }
 
   private parseDate(dateString: string): Date {
@@ -320,7 +334,7 @@ export class Dashboard {
       header: true,
       skipEmptyLines: true,
       complete: (result) => {
-        const movimentos = (result.data as any[]).map(row => {
+        const movimentos = (result.data as any[]).map((row, index) => {
           const descricao = row['Descrição']?.toUpperCase() || '';
           const valor = parseFloat(row['Montante'].replace(',','.'));
           const tipo = valor >= 0 ? 'credito' : 'debito';
@@ -342,6 +356,7 @@ export class Dashboard {
           }
 
           return {
+            index,
             data: row['Data Movimento'],
             descricao,
             valor,
@@ -372,10 +387,17 @@ export class Dashboard {
       if (!raw) return;
       const parsed = JSON.parse(raw) as Movimento[];
       if (Array.isArray(parsed)) {
-        this.movimentos.set(parsed);
+        this.movimentos.set(this.normalizarIndices(parsed));
       }
     } catch {
       // storage not available or invalid data; ignore
     }
+  }
+
+  private normalizarIndices(movimentos: Movimento[]) {
+    return movimentos.map((m, index) => ({
+      ...m,
+      index: typeof m.index === 'number' ? m.index : index
+    }));
   }
 }
