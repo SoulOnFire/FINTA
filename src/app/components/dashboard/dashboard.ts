@@ -27,8 +27,12 @@ interface Entidade {
   styleUrl: './dashboard.scss'
 })
 export class Dashboard {
-  constructor(private papa: Papa) { }
+  constructor(private papa: Papa) {
+    this.carregarMovimentosSalvos();
+  }
   movimentos = signal<Movimento[]>([]);
+
+  private readonly storageKey = 'finta.movimentos';
 
   // Toggles de visualização
   mostrarGrafico = signal(true);
@@ -147,6 +151,12 @@ export class Dashboard {
     this.filtroDataInicio.set('');
     this.filtroDataFim.set('');
     this.filtroCategoria.set([]);
+  }
+
+  limparMovimentos() {
+    this.movimentos.set([]);
+    this.salvarMovimentos([]);
+    this.limparFiltros();
   }
   categoriasRegex: { [key: string]: RegExp } = {
     '🏧Levantamentos': /(CH-\d+|LEV\s)/i,
@@ -292,7 +302,7 @@ export class Dashboard {
       header: true,
       skipEmptyLines: true,
       complete: (result) => {
-        this.movimentos.set((result.data as any[]).map(row => {
+        const movimentos = (result.data as any[]).map(row => {
           const descricao = row['Descrição']?.toUpperCase() || '';
           const valor = parseFloat(row['Montante'].replace(',','.'));
           const tipo = valor >= 0 ? 'credito' : 'debito';
@@ -322,8 +332,32 @@ export class Dashboard {
             categoria,
             entidade
           } as Movimento;
-        }));
+        });
+
+        this.movimentos.set(movimentos);
+        this.salvarMovimentos(movimentos);
       }
     });
+  }
+
+  private salvarMovimentos(movimentos: Movimento[]) {
+    try {
+      localStorage.setItem(this.storageKey, JSON.stringify(movimentos));
+    } catch {
+      // storage not available; ignore
+    }
+  }
+
+  private carregarMovimentosSalvos() {
+    try {
+      const raw = localStorage.getItem(this.storageKey);
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as Movimento[];
+      if (Array.isArray(parsed)) {
+        this.movimentos.set(parsed);
+      }
+    } catch {
+      // storage not available or invalid data; ignore
+    }
   }
 }

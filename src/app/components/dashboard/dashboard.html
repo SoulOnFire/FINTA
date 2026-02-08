@@ -1,8 +1,15 @@
 <div class="p-2 sm:p-4">
     <div class="print-hide">
         <h2 class="text-lg sm:text-xl font-bold mb-2">Importar Movimentos</h2>
+        @if (movimentos().length === 0) {
         <input type="file" (change)="onFileSelected($event)" accept=".csv" 
                class="w-full text-sm p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+        } @else {
+        <button (click)="limparMovimentos()"
+                class="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-3 sm:px-4 text-sm rounded transition-colors">
+            Limpar Movimentos
+        </button>
+        }
     </div>
 
     @if (movimentos().length > 0) {
