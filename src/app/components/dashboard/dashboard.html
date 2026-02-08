@@ -57,9 +57,18 @@
 
             <!-- Toggles de visualização -->
             <div class="flex flex-wrap gap-2 mt-4 mb-2 print-hide">
-                <button (click)="mostrarGrafico.set(!mostrarGrafico())" [class.bg-blue-600]="mostrarGrafico()" class="px-3 py-1 rounded text-white bg-blue-400 hover:bg-blue-600 transition-colors">Gráfico</button>
-                <button (click)="mostrarResumo.set(!mostrarResumo())" [class.bg-green-600]="mostrarResumo()" class="px-3 py-1 rounded text-white bg-green-400 hover:bg-green-600 transition-colors">Resumo</button>
-                <button (click)="mostrarMovimentos.set(!mostrarMovimentos())" [class.bg-gray-600]="mostrarMovimentos()" class="px-3 py-1 rounded text-white bg-gray-400 hover:bg-gray-600 transition-colors">Movimentos</button>
+                <button (click)="mostrarGrafico.set(!mostrarGrafico())" [class.bg-blue-600]="mostrarGrafico()" class="px-3 py-1 rounded text-white bg-blue-400 hover:bg-blue-600 transition-colors">
+                    @if (mostrarGrafico()) { <span class="mr-1">&#10003;</span> }
+                    Gráfico
+                </button>
+                <button (click)="mostrarResumo.set(!mostrarResumo())" [class.bg-green-600]="mostrarResumo()" class="px-3 py-1 rounded text-white bg-green-400 hover:bg-green-600 transition-colors">
+                    @if (mostrarResumo()) { <span class="mr-1">&#10003;</span> }
+                    Resumo
+                </button>
+                <button (click)="mostrarMovimentos.set(!mostrarMovimentos())" [class.bg-gray-600]="mostrarMovimentos()" class="px-3 py-1 rounded text-white bg-gray-400 hover:bg-gray-600 transition-colors">
+                    @if (mostrarMovimentos()) { <span class="mr-1">&#10003;</span> }
+                    Movimentos
+                </button>
             </div>
 
             <!-- Gráfico -->
@@ -151,16 +160,19 @@
                 <button (click)="filtroTipoMovimento.set('todos')"
                     [class.bg-gray-600]="filtroTipoMovimento() === 'todos'"
                     class="px-3 py-1 rounded text-white bg-gray-400 hover:bg-gray-600 transition-colors">
+                    @if (filtroTipoMovimento() === 'todos') { <span class="mr-1">&#10003;</span> }
                     Todos
                 </button>
                 <button (click)="filtroTipoMovimento.set('credito')"
                     [class.bg-green-600]="filtroTipoMovimento() === 'credito'"
                     class="px-3 py-1 rounded text-white bg-green-400 hover:bg-green-600 transition-colors">
+                    @if (filtroTipoMovimento() === 'credito') { <span class="mr-1">&#10003;</span> }
                     Créditos
                 </button>
                 <button (click)="filtroTipoMovimento.set('debito')"
                     [class.bg-red-600]="filtroTipoMovimento() === 'debito'"
                     class="px-3 py-1 rounded text-white bg-red-400 hover:bg-red-600 transition-colors">
+                    @if (filtroTipoMovimento() === 'debito') { <span class="mr-1">&#10003;</span> }
                     Débitos
                 </button>
             </div>
