@@ -32,7 +32,10 @@
                 <select multiple [(ngModel)]="filtroCategoria"
                     class="w-full p-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 h-32 category-select">
                     @for (cat of categoriasDisponiveis; track cat) {
-                    <option [ngValue]="cat">{{ cat }}</option>
+                    <option [ngValue]="cat">@if(filtroCategoria().includes(cat)){
+                        <span class="mr-1">&#10003;</span>
+                        }
+                        {{ cat }}</option>
                     }
                 </select>
                 <div class="text-xs text-gray-500 mt-1">Segure Ctrl (Windows) ou Cmd (Mac) para selecionar várias</div>
