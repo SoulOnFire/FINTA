@@ -1,5 +1,5 @@
 import { CurrencyPipe } from '@angular/common';
-import { Component, signal } from '@angular/core';
+import { Component, HostListener, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Papa } from 'ngx-papaparse';
 import { ChartsComponent } from '../charts/charts';
@@ -34,6 +34,38 @@ export class Dashboard {
   mostrarGrafico = signal(true);
   mostrarResumo = signal(true);
   mostrarMovimentos = signal(true);
+
+  private prevMostrarGrafico: boolean | null = null;
+  private prevMostrarResumo: boolean | null = null;
+  private prevMostrarMovimentos: boolean | null = null;
+
+  @HostListener('window:beforeprint')
+  onBeforePrint() {
+    this.prevMostrarGrafico = this.mostrarGrafico();
+    this.prevMostrarResumo = this.mostrarResumo();
+    this.prevMostrarMovimentos = this.mostrarMovimentos();
+
+    this.mostrarGrafico.set(false);
+    this.mostrarResumo.set(true);
+    this.mostrarMovimentos.set(true);
+  }
+
+  @HostListener('window:afterprint')
+  onAfterPrint() {
+    if (this.prevMostrarGrafico !== null) {
+      this.mostrarGrafico.set(this.prevMostrarGrafico);
+    }
+    if (this.prevMostrarResumo !== null) {
+      this.mostrarResumo.set(this.prevMostrarResumo);
+    }
+    if (this.prevMostrarMovimentos !== null) {
+      this.mostrarMovimentos.set(this.prevMostrarMovimentos);
+    }
+
+    this.prevMostrarGrafico = null;
+    this.prevMostrarResumo = null;
+    this.prevMostrarMovimentos = null;
+  }
 
   // Filtros
   filtroDataInicio = signal<string>('');

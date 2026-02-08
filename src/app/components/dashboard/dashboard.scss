@@ -1,3 +1,61 @@
 .text-right {
   text-align: right;
 }
+
+@media print {
+  .print-hide {
+    display: none !important;
+  }
+
+  .print-table {
+    display: block !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+
+  .print-cards {
+    display: none !important;
+  }
+
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    table-layout: auto !important;
+  }
+
+  thead {
+    background: transparent !important;
+  }
+
+  th,
+  td {
+    color: #000 !important;
+    background: transparent !important;
+    border-bottom: 1px solid #ddd !important;
+    padding: 4px 6px !important;
+    font-size: 10pt !important;
+  }
+
+  [class*="bg-"],
+  [class*="text-"] {
+    background: transparent !important;
+  }
+
+  .print-table .overflow-x-auto {
+    overflow: visible !important;
+  }
+
+  .print-table .whitespace-nowrap {
+    white-space: normal !important;
+  }
+
+  .print-table .truncate {
+    overflow: visible !important;
+    text-overflow: clip !important;
+    white-space: normal !important;
+  }
+
+  .print-table .max-w-xs {
+    max-width: none !important;
+  }
+}
